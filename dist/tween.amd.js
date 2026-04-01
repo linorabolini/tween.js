@@ -479,7 +479,7 @@ define(['exports'], (function (exports) { 'use strict';
         };
         Tween.prototype.to = function (target, duration) {
             if (this._isPlaying)
-                this.stop();
+                throw new Error('Can not call Tween.to() while Tween is already started or paused. Stop the Tween first.');
             this._valuesEnd = target;
             this._propertiesAreSetUp = false;
             if (duration !== undefined) {
@@ -910,7 +910,7 @@ define(['exports'], (function (exports) { 'use strict';
         return Tween;
     }());
 
-    var VERSION = '25.0.3';
+    var VERSION = '25.0.4';
 
     /**
      * Tween.js - Licensed under the MIT license
