@@ -1,6 +1,6 @@
 {
-	"name": "@tweenjs/tween.js",
-	"description": "Simple and fast tweening engine with optimised Robert Penner's equations.",
+	"name": "@linorabolini/tween.js",
+	"description": "Fork from tween.js with custom flavor.",
 	"version": "25.0.0",
 	"type": "module",
 	"main": "dist/tween.cjs",
@@ -18,13 +18,13 @@
 		"README.md",
 		"LICENSE"
 	],
-	"homepage": "https://github.com/tweenjs/tween.js",
+	"homepage": "https://github.com/linorabolini/tween.js",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/tweenjs/tween.js.git"
+		"url": "https://github.com/linorabolini/tween.js.git"
 	},
 	"bugs": {
-		"url": "https://github.com/tweenjs/tween.js/issues"
+		"url": "https://github.com/linorabolini/tween.js/issues"
 	},
 	"license": "MIT",
 	"keywords": [
