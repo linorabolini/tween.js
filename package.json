@@ -18,10 +18,13 @@
 		"README.md",
 		"LICENSE"
 	],
+	 "publishConfig": {
+    "access": "public"
+  },
 	"homepage": "https://github.com/linorabolini/tween.js",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/linorabolini/tween.js.git"
+		"url": "git+https://github.com/linorabolini/tween.js.git"
 	},
 	"bugs": {
 		"url": "https://github.com/linorabolini/tween.js/issues"
