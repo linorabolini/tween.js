@@ -87,8 +87,9 @@ export class Tween<T extends UnknownProps = any> {
 		}
 	}
 
-	from(object: T) {
+	from(object: T): this {
 		this._object = object
+		return this
 	}
 
 	getId(): number {
