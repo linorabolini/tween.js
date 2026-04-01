@@ -98,7 +98,7 @@ declare class Tween<T extends UnknownProps = any> {
      * will be removed in the future.
      */
     constructor(object: T, group: true);
-    from(object: T): void;
+    from(object: T): this;
     getId(): number;
     getCompleteCallback(): ((object: T) => void) | undefined;
     isPlaying(): boolean;
@@ -198,7 +198,7 @@ declare class Sequence {
     static nextId(): number;
 }
 
-declare const VERSION = "25.0.2";
+declare const VERSION = "25.0.3";
 
 declare const nextId: typeof Sequence.nextId;
 /**

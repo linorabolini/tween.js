@@ -460,6 +460,7 @@ define(['exports'], (function (exports) { 'use strict';
         }
         Tween.prototype.from = function (object) {
             this._object = object;
+            return this;
         };
         Tween.prototype.getId = function () {
             return this._id;
@@ -909,7 +910,7 @@ define(['exports'], (function (exports) { 'use strict';
         return Tween;
     }());
 
-    var VERSION = '25.0.2';
+    var VERSION = '25.0.3';
 
     /**
      * Tween.js - Licensed under the MIT license
