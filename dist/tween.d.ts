@@ -85,11 +85,12 @@ declare class Tween<T extends UnknownProps = any> {
     private _propertiesAreSetUp;
     private _object;
     private _group?;
+    static Sequence: (...tweens: Tween[]) => Tween<any>;
     /**
      * @param object - The object whose properties this Tween will animate.
      * @param group - The object whose properties this Tween will animate.
      */
-    constructor(object: T, group?: Group);
+    constructor(object?: T, group?: Group);
     /**
      * @deprecated The group parameter is now deprecated, instead use `new
      * Tween(object)` then `group.add(tween)` to add a tween to a group. Use

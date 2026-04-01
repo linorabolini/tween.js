@@ -426,7 +426,7 @@ var Tween = /** @class */ (function () {
         this._valuesStart = {};
         this._valuesEnd = {};
         this._valuesStartRepeat = {};
-        this._duration = 1000;
+        this._duration = 0;
         this._isDynamic = false;
         this._initialRepeat = 0;
         this._repeat = 0;
@@ -445,7 +445,7 @@ var Tween = /** @class */ (function () {
         this._isChainStopped = false;
         this._propertiesAreSetUp = false;
         this._goToEnd = false;
-        this._object = object;
+        this._object = object !== null && object !== void 0 ? object : {};
         if (typeof group === 'object') {
             this._group = group;
             group.add(this);
@@ -472,12 +472,13 @@ var Tween = /** @class */ (function () {
         return this._duration;
     };
     Tween.prototype.to = function (target, duration) {
-        if (duration === void 0) { duration = 1000; }
         if (this._isPlaying)
             throw new Error('Can not call Tween.to() while Tween is already started or paused. Stop the Tween first.');
         this._valuesEnd = target;
         this._propertiesAreSetUp = false;
-        this._duration = duration < 0 ? 0 : duration;
+        if (duration !== undefined) {
+            this._duration = duration < 0 ? 0 : duration;
+        }
         return this;
     };
     Tween.prototype.duration = function (duration) {
@@ -889,6 +890,17 @@ var Tween = /** @class */ (function () {
         this._valuesEnd[property] = tmp;
     };
     Tween.autoStartOnUpdate = false;
+    Tween.Sequence = function () {
+        var tweens = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            tweens[_i] = arguments[_i];
+        }
+        tweens.reduce(function (prev, next) {
+            prev === null || prev === void 0 ? void 0 : prev.chain(next);
+            return next;
+        });
+        return tweens[0];
+    };
     return Tween;
 }());
 

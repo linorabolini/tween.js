@@ -9,12 +9,12 @@
 
 import Easing from './Easing'
 import Interpolation from './Interpolation'
-import {mainGroup} from './mainGroup'
+import { mainGroup } from './mainGroup'
 import Sequence from './Sequence'
 import now from './Now'
 
-import type {EasingFunction} from './Easing'
-import type {InterpolationFunction} from './Interpolation'
+import type { EasingFunction } from './Easing'
+import type { InterpolationFunction } from './Interpolation'
 import type Group from './Group'
 
 export class Tween<T extends UnknownProps = any> {
@@ -25,7 +25,7 @@ export class Tween<T extends UnknownProps = any> {
 	private _valuesStart: UnknownProps = {}
 	private _valuesEnd: Record<string, number | string> = {}
 	private _valuesStartRepeat: UnknownProps = {}
-	private _duration = 1000
+	private _duration = 0
 	private _isDynamic = false
 	private _initialRepeat = 0
 	private _repeat = 0
@@ -50,14 +50,22 @@ export class Tween<T extends UnknownProps = any> {
 	private _id = Sequence.nextId()
 	private _isChainStopped = false
 	private _propertiesAreSetUp = false
-	private _object: T
+	private _object: T;
 	private _group?: Group
+
+	static Sequence = (...tweens: Tween[]) => {
+		tweens.reduce((prev, next) => {
+			prev?.chain(next);
+			return next;
+		});
+		return tweens[0];
+	};
 
 	/**
 	 * @param object - The object whose properties this Tween will animate.
 	 * @param group - The object whose properties this Tween will animate.
 	 */
-	constructor(object: T, group?: Group)
+	constructor(object?: T, group?: Group)
 	/**
 	 * @deprecated The group parameter is now deprecated, instead use `new
 	 * Tween(object)` then `group.add(tween)` to add a tween to a group. Use
@@ -65,8 +73,8 @@ export class Tween<T extends UnknownProps = any> {
 	 * will be removed in the future.
 	 */
 	constructor(object: T, group: true)
-	constructor(object: T, group?: Group | true) {
-		this._object = object
+	constructor(object?: T, group?: Group | true) {
+		this._object = object ?? {} as T;
 
 		if (typeof group === 'object') {
 			this._group = group
@@ -99,13 +107,15 @@ export class Tween<T extends UnknownProps = any> {
 		return this._duration
 	}
 
-	to(target: UnknownProps, duration = 1000): this {
+	to(target: UnknownProps, duration?: number): this {
 		if (this._isPlaying)
 			throw new Error('Can not call Tween.to() while Tween is already started or paused. Stop the Tween first.')
 
 		this._valuesEnd = target
 		this._propertiesAreSetUp = false
-		this._duration = duration < 0 ? 0 : duration
+		if (duration !== undefined) {
+			this._duration = duration < 0 ? 0 : duration
+		}
 
 		return this
 	}
