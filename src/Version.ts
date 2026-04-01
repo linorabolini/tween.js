@@ -1,2 +1,2 @@
-const VERSION = '25.0.4'
+const VERSION = '25.0.5'
 export default VERSION

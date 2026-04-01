@@ -477,7 +477,7 @@ var Tween = /** @class */ (function () {
     };
     Tween.prototype.to = function (target, duration) {
         if (this._isPlaying)
-            throw new Error('Can not call Tween.to() while Tween is already started or paused. Stop the Tween first.');
+            this.stop();
         this._valuesEnd = target;
         this._propertiesAreSetUp = false;
         if (duration !== undefined) {
@@ -908,7 +908,7 @@ var Tween = /** @class */ (function () {
     return Tween;
 }());
 
-var VERSION = '25.0.4';
+var VERSION = '25.0.5';
 
 /**
  * Tween.js - Licensed under the MIT license
