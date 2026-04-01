@@ -9,12 +9,12 @@
 
 import Easing from './Easing'
 import Interpolation from './Interpolation'
-import { mainGroup } from './mainGroup'
+import {mainGroup} from './mainGroup'
 import Sequence from './Sequence'
 import now from './Now'
 
-import type { EasingFunction } from './Easing'
-import type { InterpolationFunction } from './Interpolation'
+import type {EasingFunction} from './Easing'
+import type {InterpolationFunction} from './Interpolation'
 import type Group from './Group'
 
 export class Tween<T extends UnknownProps = any> {
@@ -50,16 +50,16 @@ export class Tween<T extends UnknownProps = any> {
 	private _id = Sequence.nextId()
 	private _isChainStopped = false
 	private _propertiesAreSetUp = false
-	private _object: T;
+	private _object: T
 	private _group?: Group
 
 	static Sequence = (...tweens: Tween[]) => {
 		tweens.reduce((prev, next) => {
-			prev?.chain(next);
-			return next;
-		});
-		return tweens[0];
-	};
+			prev?.chain(next)
+			return next
+		})
+		return tweens[0]
+	}
 
 	/**
 	 * @param object - The object whose properties this Tween will animate.
@@ -74,7 +74,7 @@ export class Tween<T extends UnknownProps = any> {
 	 */
 	constructor(object: T, group: true)
 	constructor(object?: T, group?: Group | true) {
-		this._object = object ?? {} as T;
+		this._object = object ?? ({} as T)
 
 		if (typeof group === 'object') {
 			this._group = group
@@ -85,6 +85,10 @@ export class Tween<T extends UnknownProps = any> {
 			this._group = mainGroup
 			mainGroup.add(this)
 		}
+	}
+
+	from(object: T) {
+		this._object = object
 	}
 
 	getId(): number {
@@ -108,8 +112,7 @@ export class Tween<T extends UnknownProps = any> {
 	}
 
 	to(target: UnknownProps, duration?: number): this {
-		if (this._isPlaying)
-			throw new Error('Can not call Tween.to() while Tween is already started or paused. Stop the Tween first.')
+		if (this._isPlaying) this.stop()
 
 		this._valuesEnd = target
 		this._propertiesAreSetUp = false
