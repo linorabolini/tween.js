@@ -1003,7 +1003,7 @@ export const tests = {
 		TWEEN.removeAll()
 
 		const obj = {x: 0},
-			t = new TWEEN.Tween(obj, true).to({x: 100})
+			t = new TWEEN.Tween(obj, true).to({x: 100}, 1000)
 
 		test.equal(obj.x, 0)
 
