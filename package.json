@@ -1,7 +1,7 @@
 {
 	"name": "@linorabolini/tween.js",
 	"description": "Fork from tween.js with custom flavor.",
-	"version": "25.0.0",
+	"version": "25.0.1",
 	"type": "module",
 	"main": "dist/tween.cjs",
 	"types": "dist/tween.d.ts",
@@ -18,9 +18,9 @@
 		"README.md",
 		"LICENSE"
 	],
-	 "publishConfig": {
-    "access": "public"
-  },
+	"publishConfig": {
+		"access": "public"
+	},
 	"homepage": "https://github.com/linorabolini/tween.js",
 	"repository": {
 		"type": "git",
