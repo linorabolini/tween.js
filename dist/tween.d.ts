@@ -66,6 +66,7 @@ declare class Tween<T extends UnknownProps = any> {
     private _repeatDelayTime?;
     private _yoyo;
     private _isPlaying;
+    private _isCompleted;
     private _reversed;
     private _delayTime;
     private _startTime;
@@ -85,7 +86,6 @@ declare class Tween<T extends UnknownProps = any> {
     private _propertiesAreSetUp;
     private _object;
     private _group?;
-    static Sequence: (...tweens: Tween[]) => Tween<any>;
     /**
      * @param object - The object whose properties this Tween will animate.
      * @param group - The object whose properties this Tween will animate.
@@ -102,6 +102,7 @@ declare class Tween<T extends UnknownProps = any> {
     getId(): number;
     getCompleteCallback(): ((object: T) => void) | undefined;
     isPlaying(): boolean;
+    isCompleted(): boolean;
     isPaused(): boolean;
     getDuration(): number;
     to(target: UnknownProps, duration?: number): this;
@@ -168,9 +169,12 @@ type UnknownProps = Record<string, any>;
 declare class Group {
     private _tweens;
     private _tweensAddedDuringUpdate;
+    preserve: boolean;
+    _lastQueued: Tween<any> | undefined;
     constructor(...tweens: Tween[]);
     getAll(): Array<Tween>;
     removeAll(): void;
+    addQueued(...tweens: Tween[]): void;
     add(...tweens: Tween[]): void;
     remove(...tweens: Tween[]): void;
     /** Return true if all tweens in the group are not paused or playing. */

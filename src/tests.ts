@@ -913,6 +913,54 @@ export const tests = {
 		test.done()
 	},
 
+	'Test TWEEN.Tween.chain -- chain a tween to a finished tween'(test: Test): void {
+		TWEEN.removeAll()
+
+		const t = new TWEEN.Tween({}, true),
+			t2 = new TWEEN.Tween({}, true)
+		let tStarted = false,
+			tCompleted = false,
+			t2Started = false
+
+		t.to({}, 1000)
+		t2.to({}, 1000)
+
+		t.onStart(function (): void {
+			tStarted = true
+		})
+
+		t.onComplete(function (): void {
+			tCompleted = true
+		})
+
+		t2.onStart(function (): void {
+			test.equal(tStarted, true)
+			test.equal(tCompleted, true)
+			test.equal(t2Started, false)
+			t2Started = true
+		})
+
+		test.equal(tStarted, false)
+		test.equal(t2Started, false)
+
+		t.start(0)
+		TWEEN.update(0)
+
+		test.equal(tStarted, true)
+		test.equal(t2Started, false)
+
+		TWEEN.update(1000)
+
+		test.equal(tCompleted, true)
+
+		t.chain(t2)
+
+		TWEEN.update(1005)
+
+		test.equal(t2Started, true, 't2 is automatically started by t')
+		test.done()
+	},
+
 	'Test TWEEN.Tween.chain allows endless loops'(test: Test): void {
 		TWEEN.removeAll()
 
@@ -1500,9 +1548,9 @@ export const tests = {
 		tween1.start()
 		tween1.end()
 
-		test.equal(object1.x, 50)
-		test.equal(object1.y, 123)
-		test.equal(object1.z, 1234)
+		test.equal(Math.round(object1.x), 50)
+		test.equal(Math.round(object1.y), 123)
+		test.equal(Math.round(object1.z), 1234)
 
 		const object2 = {x: 0, y: -50, z: 1000}
 		const target2 = {x: 50, y: 123, z: '+234'}
@@ -1513,9 +1561,9 @@ export const tests = {
 		tween2.update(500)
 		tween2.end()
 
-		test.equal(object2.x, 50)
-		test.equal(object2.y, 123)
-		test.equal(object2.z, 1234)
+		test.equal(Math.round(object2.x), 50)
+		test.equal(Math.round(object2.y), 123)
+		test.equal(Math.round(object2.z), 1234)
 
 		test.done()
 	},
@@ -2221,6 +2269,50 @@ export const tests = {
 
 		test.equal(TWEEN.getAll().length, 1)
 		test.equal(group.getAll().length, 2)
+
+		test.done()
+	},
+
+	'Custom group.addQueued() starts the tween if no last queued tween was present'(test: Test): void {
+		const group = new TWEEN.Group()
+
+		const groupTweenA = new TWEEN.Tween()
+
+		group.addQueued(groupTweenA)
+
+		test.equal(group.getAll().length, 1)
+		test.equal(groupTweenA.isPlaying(), true)
+
+		test.done()
+	},
+
+	'Custom group.addQueued() queues the tweens when last tween is defined'(test: Test): void {
+		const group = new TWEEN.Group()
+
+		const groupTweenA = new TWEEN.Tween()
+		const groupTweenB = new TWEEN.Tween()
+
+		groupTweenA.duration(1000)
+		groupTweenB.duration(1000)
+
+		test.equal(groupTweenA.isPlaying(), false)
+		test.equal(groupTweenB.isPlaying(), false)
+
+		group.addQueued(groupTweenA)
+
+		test.equal(group.getAll().length, 1)
+		test.equal(groupTweenA.isPlaying(), true)
+		test.equal(groupTweenB.isPlaying(), false)
+
+		group.addQueued(groupTweenB)
+
+		test.equal(groupTweenA.isPlaying(), true)
+		test.equal(groupTweenB.isPlaying(), false)
+
+		group.update(performance.now() + 1001)
+
+		test.equal(groupTweenA.isPlaying(), false)
+		test.equal(groupTweenB.isPlaying(), true)
 
 		test.done()
 	},

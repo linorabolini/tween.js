@@ -10,6 +10,8 @@ import type {Tween} from './Tween'
 export default class Group {
 	private _tweens: Record<string, Tween> = {}
 	private _tweensAddedDuringUpdate: Record<string, Tween> = {}
+	preserve = true
+	_lastQueued: Tween<any> | undefined
 
 	constructor(...tweens: Tween[]) {
 		this.add(...tweens)
@@ -21,6 +23,20 @@ export default class Group {
 
 	removeAll(): void {
 		this._tweens = {}
+	}
+
+	addQueued(...tweens: Tween[]) {
+		for (const tween of tweens) {
+			this.add(tween)
+
+			if (this._lastQueued) {
+				this._lastQueued.chain(tween)
+			} else {
+				tween.start()
+			}
+
+			this._lastQueued = tween
+		}
 	}
 
 	add(...tweens: Tween[]): void {
@@ -61,7 +77,7 @@ export default class Group {
 	 * tweens, and do not rely on tweens being automatically added or removed.
 	 */
 	update(time?: number, preserve?: boolean): void
-	update(time: number = now(), preserve = true): void {
+	update(time: number = now(), preserve = this.preserve): void {
 		let tweenIds = Object.keys(this._tweens)
 
 		if (tweenIds.length === 0) return

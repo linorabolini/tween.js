@@ -32,6 +32,7 @@ export class Tween<T extends UnknownProps = any> {
 	private _repeatDelayTime?: number
 	private _yoyo = false
 	private _isPlaying = false
+	private _isCompleted = false
 	private _reversed = false
 	private _delayTime = 0
 	private _startTime = 0
@@ -52,14 +53,6 @@ export class Tween<T extends UnknownProps = any> {
 	private _propertiesAreSetUp = false
 	private _object: T
 	private _group?: Group
-
-	static Sequence = (...tweens: Tween[]) => {
-		tweens.reduce((prev, next) => {
-			prev?.chain(next)
-			return next
-		})
-		return tweens[0]
-	}
 
 	/**
 	 * @param object - The object whose properties this Tween will animate.
@@ -104,6 +97,10 @@ export class Tween<T extends UnknownProps = any> {
 		return this._isPlaying
 	}
 
+	isCompleted(): boolean {
+		return this._isCompleted
+	}
+
 	isPaused(): boolean {
 		return this._isPaused
 	}
@@ -113,7 +110,7 @@ export class Tween<T extends UnknownProps = any> {
 	}
 
 	to(target: UnknownProps, duration?: number): this {
-		if (this._isPlaying) this.stop();
+		if (this._isPlaying) this.stop()
 
 		this._valuesEnd = target
 		this._propertiesAreSetUp = false
@@ -154,7 +151,7 @@ export class Tween<T extends UnknownProps = any> {
 		}
 
 		this._isPlaying = true
-
+		this._isCompleted = false
 		this._isPaused = false
 
 		this._onStartCallbackFired = false
@@ -300,7 +297,7 @@ export class Tween<T extends UnknownProps = any> {
 		}
 
 		this._isPlaying = false
-
+		this._isCompleted = false
 		this._isPaused = false
 
 		if (this._onStopCallback) {
@@ -409,8 +406,18 @@ export class Tween<T extends UnknownProps = any> {
 	}
 
 	// eslint-disable-next-line
+	// chain(...tweens: Array<Tween<any>>): this {
+	// 	this._chainedTweens = tweens
+	// 	return this
+	// }
+
 	chain(...tweens: Array<Tween<any>>): this {
 		this._chainedTweens = tweens
+		if (this._isCompleted) {
+			for (let i = 0, numChainedTweens = this._chainedTweens.length; i < numChainedTweens; i++) {
+				this._chainedTweens[i].start()
+			}
+		}
 		return this
 	}
 
@@ -566,6 +573,7 @@ export class Tween<T extends UnknownProps = any> {
 				}
 
 				this._isPlaying = false
+				this._isCompleted = true
 
 				return false
 			}

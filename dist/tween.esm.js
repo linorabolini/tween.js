@@ -235,6 +235,7 @@ var Group = /** @class */ (function () {
         }
         this._tweens = {};
         this._tweensAddedDuringUpdate = {};
+        this.preserve = true;
         this.add.apply(this, tweens);
     }
     Group.prototype.getAll = function () {
@@ -244,14 +245,31 @@ var Group = /** @class */ (function () {
     Group.prototype.removeAll = function () {
         this._tweens = {};
     };
+    Group.prototype.addQueued = function () {
+        var tweens = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            tweens[_i] = arguments[_i];
+        }
+        for (var _a = 0, tweens_1 = tweens; _a < tweens_1.length; _a++) {
+            var tween = tweens_1[_a];
+            this.add(tween);
+            if (this._lastQueued) {
+                this._lastQueued.chain(tween);
+            }
+            else {
+                tween.start();
+            }
+            this._lastQueued = tween;
+        }
+    };
     Group.prototype.add = function () {
         var _a;
         var tweens = [];
         for (var _i = 0; _i < arguments.length; _i++) {
             tweens[_i] = arguments[_i];
         }
-        for (var _b = 0, tweens_1 = tweens; _b < tweens_1.length; _b++) {
-            var tween = tweens_1[_b];
+        for (var _b = 0, tweens_2 = tweens; _b < tweens_2.length; _b++) {
+            var tween = tweens_2[_b];
             // Remove from any other group first, a tween can only be in one group at a time.
             // @ts-expect-error library internal access
             (_a = tween._group) === null || _a === void 0 ? void 0 : _a.remove(tween);
@@ -266,8 +284,8 @@ var Group = /** @class */ (function () {
         for (var _i = 0; _i < arguments.length; _i++) {
             tweens[_i] = arguments[_i];
         }
-        for (var _a = 0, tweens_2 = tweens; _a < tweens_2.length; _a++) {
-            var tween = tweens_2[_a];
+        for (var _a = 0, tweens_3 = tweens; _a < tweens_3.length; _a++) {
+            var tween = tweens_3[_a];
             // @ts-expect-error library internal access
             tween._group = undefined;
             delete this._tweens[tween.getId()];
@@ -280,7 +298,7 @@ var Group = /** @class */ (function () {
     };
     Group.prototype.update = function (time, preserve) {
         if (time === void 0) { time = now(); }
-        if (preserve === void 0) { preserve = true; }
+        if (preserve === void 0) { preserve = this.preserve; }
         var tweenIds = Object.keys(this._tweens);
         if (tweenIds.length === 0)
             return;
@@ -432,6 +450,7 @@ var Tween = /** @class */ (function () {
         this._repeat = 0;
         this._yoyo = false;
         this._isPlaying = false;
+        this._isCompleted = false;
         this._reversed = false;
         this._delayTime = 0;
         this._startTime = 0;
@@ -468,6 +487,9 @@ var Tween = /** @class */ (function () {
     };
     Tween.prototype.isPlaying = function () {
         return this._isPlaying;
+    };
+    Tween.prototype.isCompleted = function () {
+        return this._isCompleted;
     };
     Tween.prototype.isPaused = function () {
         return this._isPaused;
@@ -512,6 +534,7 @@ var Tween = /** @class */ (function () {
             }
         }
         this._isPlaying = true;
+        this._isCompleted = false;
         this._isPaused = false;
         this._onStartCallbackFired = false;
         this._onEveryStartCallbackFired = false;
@@ -618,6 +641,7 @@ var Tween = /** @class */ (function () {
             return this;
         }
         this._isPlaying = false;
+        this._isCompleted = false;
         this._isPaused = false;
         if (this._onStopCallback) {
             this._onStopCallback(this._object);
@@ -701,12 +725,21 @@ var Tween = /** @class */ (function () {
         return this;
     };
     // eslint-disable-next-line
+    // chain(...tweens: Array<Tween<any>>): this {
+    // 	this._chainedTweens = tweens
+    // 	return this
+    // }
     Tween.prototype.chain = function () {
         var tweens = [];
         for (var _i = 0; _i < arguments.length; _i++) {
             tweens[_i] = arguments[_i];
         }
         this._chainedTweens = tweens;
+        if (this._isCompleted) {
+            for (var i = 0, numChainedTweens = this._chainedTweens.length; i < numChainedTweens; i++) {
+                this._chainedTweens[i].start();
+            }
+        }
         return this;
     };
     Tween.prototype.onStart = function (callback) {
@@ -837,6 +870,7 @@ var Tween = /** @class */ (function () {
                     this._chainedTweens[i].start(this._startTime + this._duration, false);
                 }
                 this._isPlaying = false;
+                this._isCompleted = true;
                 return false;
             }
         }
@@ -894,17 +928,6 @@ var Tween = /** @class */ (function () {
         this._valuesEnd[property] = tmp;
     };
     Tween.autoStartOnUpdate = false;
-    Tween.Sequence = function () {
-        var tweens = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            tweens[_i] = arguments[_i];
-        }
-        tweens.reduce(function (prev, next) {
-            prev === null || prev === void 0 ? void 0 : prev.chain(next);
-            return next;
-        });
-        return tweens[0];
-    };
     return Tween;
 }());
 
