@@ -1,7 +1,7 @@
 {
 	"name": "@linorabolini/tween.js",
 	"description": "Fork from tween.js with custom flavor.",
-	"version": "25.0.6",
+	"version": "25.0.7",
 	"type": "module",
 	"main": "dist/tween.cjs",
 	"types": "dist/tween.d.ts",
